@@ -1822,7 +1822,7 @@
 <!-- ============================================
      LISENSSKJERM
      ============================================ -->
-<div class="license-screen" id="license-screen">
+<div class="license-screen hidden" id="license-screen">
     <div class="license-box">
         <h1>MønsterMatch</h1>
         <p class="license-subtitle">Skriv inn din lisenskode for å aktivere spillet</p>
@@ -1831,6 +1831,9 @@
         <p class="license-success hidden" id="license-success"></p>
         <button class="license-btn" id="license-activate-btn">Aktiver</button>
         <p class="license-buy-link">Har du ikke en kode? <a href="https://sondrefox.gumroad.com/l/vyiyty" target="_blank">Kjøp her</a></p>
+        <hr style="border:none;border-top:1px solid #e2e8f0;margin:20px 0;">
+        <p id="demo-info" style="font-size:0.85rem;color:#64748b;margin-bottom:10px;">Ikke klar til å kjøpe? Prøv gratis først.</p>
+        <button class="license-btn" id="demo-btn" onclick="continueDemo()" style="background:#64748b;">Prøv gratis (3 spill igjen)</button>
     </div>
 </div>
 
@@ -1852,6 +1855,8 @@
         <h3>Vanskelighetsgrad</h3>
         <div class="difficulty-options" id="difficulty-options"></div>
     </div>
+
+    <div id="demo-banner" style="display:none;margin-top:16px;padding:10px 16px;background:#fef9c3;border:1px solid #fde047;border-radius:10px;font-size:0.88rem;color:#854d0e;text-align:center;"></div>
 
     <button class="start-btn" id="start-btn" disabled>Start spill</button>
 
@@ -2039,17 +2044,10 @@ function setStoredLicense(key) {
 }
 
 function checkLicense() {
+    // Viser aldri lisensskjermen ved lasting – kun når en funksjon krever tilgang
     const licenseScreen = document.getElementById('license-screen');
-    const menuEl = document.getElementById('menu');
-    const stored = getStoredLicense();
-
-    if (stored && validateLicenseKey(stored)) {
-        licenseScreen.classList.add('hidden');
-        menuEl.style.display = '';
-    } else {
-        licenseScreen.classList.remove('hidden');
-        menuEl.style.display = 'none';
-    }
+    licenseScreen.classList.add('hidden');
+    document.getElementById('menu').style.display = '';
 }
 
 function activateLicense() {
@@ -2078,6 +2076,11 @@ function activateLicense() {
         setTimeout(() => {
             document.getElementById('license-screen').classList.add('hidden');
             document.getElementById('menu').style.display = '';
+            renderMenu();
+            if (_pendingStartArgs) {
+                _pendingDemoStart = true;
+                startGame(..._pendingStartArgs);
+            }
         }, 1000);
     } else {
         errorEl.textContent = 'Ugyldig lisenskode';
@@ -3305,6 +3308,50 @@ function resetStats() {
 }
 
 // ============================================
+// DEMO-MODUS
+// ============================================
+const DEMO_KEY = 'loko_demo_used';
+const DEMO_LIMIT = 3;
+
+function getDemoUsed() { return parseInt(localStorage.getItem(DEMO_KEY) || '0'); }
+function incrementDemo() { localStorage.setItem(DEMO_KEY, getDemoUsed() + 1); }
+function isDemoActive() { return getDemoUsed() < DEMO_LIMIT; }
+function isLicensed() {
+    const stored = getStoredLicense();
+    return stored && validateLicenseKey(stored);
+}
+function hasAccess() { return isLicensed() || isDemoActive(); }
+
+function showLicenseScreen() {
+    const licenseScreen = document.getElementById('license-screen');
+    const demoBtn = document.getElementById('demo-btn');
+    const demoInfo = document.getElementById('demo-info');
+    const remaining = DEMO_LIMIT - getDemoUsed();
+
+    if (isDemoActive()) {
+        demoBtn.textContent = `Prøv gratis (${remaining} spill igjen)`;
+        demoBtn.style.display = '';
+        demoInfo.style.display = '';
+    } else {
+        demoBtn.style.display = 'none';
+        demoInfo.style.display = 'none';
+    }
+
+    licenseScreen.classList.remove('hidden');
+}
+
+function continueDemo() {
+    document.getElementById('license-screen').classList.add('hidden');
+    _pendingDemoStart = true;
+    if (_pendingStartArgs) {
+        startGame(..._pendingStartArgs);
+    }
+}
+
+let _pendingStartArgs = null;
+let _pendingDemoStart = false;
+
+// ============================================
 // DOM-REFERANSER
 // ============================================
 
@@ -3810,6 +3857,25 @@ function renderMenu() {
         themeGridEl.appendChild(createCard);
     }
 
+    // Demobanner
+    const demoBanner = document.getElementById('demo-banner');
+    if (!isLicensed()) {
+        const used = getDemoUsed();
+        const remaining = DEMO_LIMIT - used;
+        if (remaining > 0) {
+            demoBanner.style.display = '';
+            demoBanner.textContent = `Demo: ${remaining} av ${DEMO_LIMIT} prøvespill igjen. Kjøp lisens for ubegrenset tilgang.`;
+        } else {
+            demoBanner.style.display = '';
+            demoBanner.textContent = 'Demo-perioden er over. Kjøp en lisens for å fortsette.';
+            demoBanner.style.background = '#fee2e2';
+            demoBanner.style.borderColor = '#fca5a5';
+            demoBanner.style.color = '#991b1b';
+        }
+    } else {
+        demoBanner.style.display = 'none';
+    }
+
     // Statistikk-seksjon
     const menuEl2 = document.getElementById('menu');
     let statsSection = document.getElementById('stats-section');
@@ -3884,6 +3950,23 @@ let currentGameCode = null;
 let preSeededShuffle = null;
 
 function startGame(fromCode = false, codeData = null) {
+    // Sjekk tilgang: lisens eller demo
+    if (!isLicensed()) {
+        if (!_pendingDemoStart) {
+            if (!isDemoActive()) {
+                // Demo utløpt – vis lisensskjerm
+                _pendingStartArgs = [fromCode, codeData];
+                showLicenseScreen();
+                return;
+            }
+            // Teller ett demospill
+            incrementDemo();
+            renderMenu(); // oppdater demobanner
+        }
+        _pendingDemoStart = false;
+        _pendingStartArgs = null;
+    }
+
     let theme, subtitle;
     currentGameCode = null;
     preSeededShuffle = null;
