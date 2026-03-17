@@ -3862,15 +3862,19 @@ function renderMenu() {
     if (!isLicensed()) {
         const used = getDemoUsed();
         const remaining = DEMO_LIMIT - used;
+        const buyLink = `<a href="https://sondrefox.gumroad.com/l/vyiyty" target="_blank" style="font-weight:600;text-decoration:underline;color:inherit;">Kjøp her</a>`;
         if (remaining > 0) {
             demoBanner.style.display = '';
-            demoBanner.textContent = `Demo: ${remaining} av ${DEMO_LIMIT} prøvespill igjen. Kjøp lisens for ubegrenset tilgang.`;
+            demoBanner.style.background = '#fef9c3';
+            demoBanner.style.borderColor = '#fde047';
+            demoBanner.style.color = '#854d0e';
+            demoBanner.innerHTML = `Demo: ${remaining} av ${DEMO_LIMIT} prøvespill igjen. ${buyLink} for ubegrenset tilgang.`;
         } else {
             demoBanner.style.display = '';
-            demoBanner.textContent = 'Demo-perioden er over. Kjøp en lisens for å fortsette.';
             demoBanner.style.background = '#fee2e2';
             demoBanner.style.borderColor = '#fca5a5';
             demoBanner.style.color = '#991b1b';
+            demoBanner.innerHTML = `Demo-perioden er over. ${buyLink} for å fortsette.`;
         }
     } else {
         demoBanner.style.display = 'none';
