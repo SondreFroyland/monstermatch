@@ -335,6 +335,54 @@
         }
 
         /* Spillkode */
+        /* ============================================
+           MENY-STEG (STEP 1 / STEP 2)
+           ============================================ */
+        #menu {
+            overflow: hidden;
+        }
+
+        .menu-step {
+            animation: stepFadeIn 0.25s ease;
+        }
+
+        @keyframes stepFadeIn {
+            from { opacity: 0; transform: translateX(24px); }
+            to   { opacity: 1; transform: translateX(0); }
+        }
+
+        @keyframes stepFadeBack {
+            from { opacity: 0; transform: translateX(-24px); }
+            to   { opacity: 1; transform: translateX(0); }
+        }
+
+        .menu-step.back {
+            animation: stepFadeBack 0.25s ease;
+        }
+
+        #menu-step-2 { display: none; }
+
+        .back-step-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            cursor: pointer;
+            padding: 0 0 16px 0;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .back-step-btn:hover { color: var(--text); }
+
+        #step2-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--title);
+            margin-bottom: 24px;
+        }
+
         .game-code-section {
             text-align: center;
             margin-top: 24px;
@@ -1833,7 +1881,7 @@
         <p class="license-buy-link">Har du ikke en kode? <a href="https://sondrefox.gumroad.com/l/vyiyty" target="_blank">Kjøp her</a></p>
         <hr style="border:none;border-top:1px solid #e2e8f0;margin:20px 0;">
         <p id="demo-info" style="font-size:0.85rem;color:#64748b;margin-bottom:10px;">Ikke klar til å kjøpe? Prøv gratis først.</p>
-        <button class="license-btn" id="demo-btn" onclick="continueDemo()" style="background:#64748b;">Prøv gratis (3 spill igjen)</button>
+        <button class="license-btn" id="demo-btn" onclick="continueDemo()" style="background:#64748b;">Prøv gratis (5 spill igjen)</button>
     </div>
 </div>
 
@@ -1841,34 +1889,47 @@
      MENY / STARTSIDE
      ============================================ -->
 <div id="menu">
-    <h1>MønsterMatch</h1>
-    <p class="menu-subtitle">Velg modus og tema for å starte spillet</p>
 
-    <div class="mode-section">
-        <h3>Hvem er du?</h3>
-        <div class="mode-options" id="mode-options"></div>
-    </div>
+    <!-- STEG 1: Modus + Tema -->
+    <div id="menu-step-1" class="menu-step">
+        <h1>MønsterMatch</h1>
+        <p class="menu-subtitle">Velg modus og tema for å starte spillet</p>
 
-    <div class="theme-grid" id="theme-grid"></div>
-
-    <div class="difficulty-section" id="difficulty-section">
-        <h3>Vanskelighetsgrad</h3>
-        <div class="difficulty-options" id="difficulty-options"></div>
-    </div>
-
-    <div id="demo-banner" style="display:none;margin-top:16px;padding:10px 16px;background:#fef9c3;border:1px solid #fde047;border-radius:10px;font-size:0.88rem;color:#854d0e;text-align:center;"></div>
-
-    <button class="start-btn" id="start-btn" disabled>Start spill</button>
-
-    <div class="game-code-section">
-        <p class="game-code-divider">— eller —</p>
-        <button class="scan-qr-btn" id="scan-qr-btn">📷 Skann QR-kode</button>
-        <div class="game-code-input-row" style="display:none;">
-            <input type="text" id="game-code-input" placeholder="XXX-XXXX" maxlength="500" autocomplete="off">
-            <button class="btn btn-primary" id="join-game-btn">Spill</button>
+        <div class="mode-section">
+            <h3>Hvem er du?</h3>
+            <div class="mode-options" id="mode-options"></div>
         </div>
-        <p class="game-code-error hidden" id="game-code-error"></p>
+
+        <div class="theme-grid" id="theme-grid"></div>
+
+        <button class="start-btn" id="neste-btn" disabled>Neste →</button>
+
+        <div class="game-code-section">
+            <p class="game-code-divider">— eller —</p>
+            <button class="scan-qr-btn" id="scan-qr-btn">📷 Skann QR-kode</button>
+            <div class="game-code-input-row" style="display:none;">
+                <input type="text" id="game-code-input" placeholder="XXX-XXXX" maxlength="500" autocomplete="off">
+                <button class="btn btn-primary" id="join-game-btn">Spill</button>
+            </div>
+            <p class="game-code-error hidden" id="game-code-error"></p>
+        </div>
     </div>
+
+    <!-- STEG 2: Vanskelighetsgrad + Start -->
+    <div id="menu-step-2" class="menu-step">
+        <button class="back-step-btn" id="back-step-btn">← Tilbake</button>
+        <h2 id="step2-title"></h2>
+
+        <div class="difficulty-section visible" id="difficulty-section">
+            <h3>Vanskelighetsgrad</h3>
+            <div class="difficulty-options" id="difficulty-options"></div>
+        </div>
+
+        <div id="demo-banner" style="display:none;margin-top:16px;padding:10px 16px;background:#fef9c3;border:1px solid #fde047;border-radius:10px;font-size:0.88rem;color:#854d0e;text-align:center;"></div>
+
+        <button class="start-btn" id="start-btn">Start spill</button>
+    </div>
+
 </div>
 
 <!-- QR-SCANNER OVERLAY -->
@@ -3311,7 +3372,7 @@ function resetStats() {
 // DEMO-MODUS
 // ============================================
 const DEMO_KEY = 'loko_demo_used';
-const DEMO_LIMIT = 3;
+const DEMO_LIMIT = 5;
 
 function getDemoUsed() { return parseInt(localStorage.getItem(DEMO_KEY) || '0'); }
 function incrementDemo() { localStorage.setItem(DEMO_KEY, getDemoUsed() + 1); }
@@ -3362,6 +3423,8 @@ const themeGridEl = document.getElementById('theme-grid');
 const difficultySectionEl = document.getElementById('difficulty-section');
 const difficultyOptionsEl = document.getElementById('difficulty-options');
 const startBtnEl = document.getElementById('start-btn');
+const nesteBtnEl = document.getElementById('neste-btn');
+const backStepBtnEl = document.getElementById('back-step-btn');
 const backBtnEl = document.getElementById('back-btn');
 const gameSubtitleEl = document.getElementById('game-subtitle');
 
@@ -3466,10 +3529,9 @@ function playIncorrectSound() { playTone(220, 0.3); }
 // ============================================
 
 const TEACHER_PW_KEY = 'loko_teacher_password';
-const DEFAULT_TEACHER_PASSWORD = 'Mønstermatch26';
 
 function getStoredPassword() {
-    return localStorage.getItem(TEACHER_PW_KEY) || DEFAULT_TEACHER_PASSWORD;
+    return localStorage.getItem(TEACHER_PW_KEY) || null;
 }
 
 function setStoredPassword(pw) {
@@ -3572,8 +3634,8 @@ passwordModal.addEventListener('click', (e) => {
 });
 
 async function tryEnterTeacherMode() {
-    // Alltid krev passord – standardpassord brukes hvis ingen er satt
-    const ok = await showPasswordModal('enter');
+    const hasPassword = getStoredPassword() !== null;
+    const ok = await showPasswordModal(hasPassword ? 'enter' : 'set');
     if (ok) {
         currentMode = 'teacher';
         renderModeOptions();
@@ -3857,29 +3919,6 @@ function renderMenu() {
         themeGridEl.appendChild(createCard);
     }
 
-    // Demobanner
-    const demoBanner = document.getElementById('demo-banner');
-    if (!isLicensed()) {
-        const used = getDemoUsed();
-        const remaining = DEMO_LIMIT - used;
-        const buyLink = `<a href="https://sondrefox.gumroad.com/l/vyiyty" target="_blank" style="font-weight:600;text-decoration:underline;color:inherit;">Kjøp her</a>`;
-        if (remaining > 0) {
-            demoBanner.style.display = '';
-            demoBanner.style.background = '#fef9c3';
-            demoBanner.style.borderColor = '#fde047';
-            demoBanner.style.color = '#854d0e';
-            demoBanner.innerHTML = `Demo: ${remaining} av ${DEMO_LIMIT} prøvespill igjen. ${buyLink} for ubegrenset tilgang.`;
-        } else {
-            demoBanner.style.display = '';
-            demoBanner.style.background = '#fee2e2';
-            demoBanner.style.borderColor = '#fca5a5';
-            demoBanner.style.color = '#991b1b';
-            demoBanner.innerHTML = `Demo-perioden er over. ${buyLink} for å fortsette.`;
-        }
-    } else {
-        demoBanner.style.display = 'none';
-    }
-
     // Statistikk-seksjon
     const menuEl2 = document.getElementById('menu');
     let statsSection = document.getElementById('stats-section');
@@ -3918,9 +3957,50 @@ function renderMenu() {
     `;
 }
 
+function showMenuStep(step, direction = 'forward') {
+    const step1 = document.getElementById('menu-step-1');
+    const step2 = document.getElementById('menu-step-2');
+    if (step === 2) {
+        step1.style.display = 'none';
+        step2.style.display = '';
+        step2.classList.remove('back');
+        void step2.offsetWidth; // force reflow for animation
+        step2.classList.add('menu-step');
+
+        const theme = getAllThemes().find(t => t.id === selectedThemeId);
+        if (theme) {
+            document.getElementById('step2-title').textContent = `${theme.icon} ${theme.name}`;
+        }
+        updateDifficultySection();
+        // Update demo banner
+        const demoBanner = document.getElementById('demo-banner');
+        if (demoBanner) {
+            const buyLink = `<a href="https://sondrefox.gumroad.com/l/vyiyty" target="_blank" style="font-weight:600;text-decoration:underline;color:inherit;">Kjøp her</a>`;
+            if (!isLicensed()) {
+                const remaining = DEMO_LIMIT - getDemoUsed();
+                demoBanner.style.display = '';
+                if (remaining > 0) {
+                    demoBanner.style.background = '#fef9c3'; demoBanner.style.borderColor = '#fde047'; demoBanner.style.color = '#854d0e';
+                    demoBanner.innerHTML = `Demo: ${remaining} av ${DEMO_LIMIT} prøvespill igjen. ${buyLink} for ubegrenset tilgang.`;
+                } else {
+                    demoBanner.style.background = '#fee2e2'; demoBanner.style.borderColor = '#fca5a5'; demoBanner.style.color = '#991b1b';
+                    demoBanner.innerHTML = `Demo-perioden er over. ${buyLink} for å fortsette.`;
+                }
+            } else {
+                demoBanner.style.display = 'none';
+            }
+        }
+    } else {
+        step2.style.display = 'none';
+        step1.style.display = '';
+        step1.classList.add('back');
+        void step1.offsetWidth;
+        step1.classList.remove('back');
+    }
+}
+
 function updateDifficultySection() {
     const theme = getAllThemes().find(t => t.id === selectedThemeId);
-
     if (theme && theme.hasDifficulty) {
         difficultySectionEl.classList.add('visible');
         renderDifficultyOptions();
@@ -3947,7 +4027,7 @@ function renderDifficultyOptions() {
 }
 
 function updateStartButton() {
-    startBtnEl.disabled = !selectedThemeId;
+    nesteBtnEl.disabled = !selectedThemeId;
 }
 
 let currentGameCode = null;
@@ -4042,6 +4122,7 @@ function showScreen(screen) {
 
 function goBackToMenu() {
     showScreen('menu');
+    showMenuStep(1);
 }
 
 // ============================================
@@ -4612,6 +4693,17 @@ function showConfetti() {
 // ============================================
 // EVENT LISTENERS
 // ============================================
+
+nesteBtnEl.addEventListener('click', () => {
+    const theme = getAllThemes().find(t => t.id === selectedThemeId);
+    if (theme && theme.hasDifficulty) {
+        showMenuStep(2);
+    } else {
+        startGame();
+    }
+});
+
+backStepBtnEl.addEventListener('click', () => showMenuStep(1));
 
 startBtnEl.addEventListener('click', () => startGame());
 backBtnEl.addEventListener('click', () => {
