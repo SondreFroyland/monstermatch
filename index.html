@@ -3902,13 +3902,11 @@ function renderMenu() {
             card.classList.add('selected');
             updateDifficultySection();
             updateStartButton();
-            requestAnimationFrame(() => {
-                const rect = nesteBtnEl.getBoundingClientRect();
-                const target = rect.bottom + window.scrollY - window.innerHeight;
-                if (target > window.scrollY) {
-                    window.scrollTo({ top: target, behavior: 'smooth' });
-                }
-            });
+            const rect = nesteBtnEl.getBoundingClientRect();
+            const target = rect.bottom + window.scrollY - window.innerHeight + 16;
+            if (target > window.scrollY) {
+                window.scrollTo({ top: target, behavior: 'smooth' });
+            }
         });
 
         themeGridEl.appendChild(card);
