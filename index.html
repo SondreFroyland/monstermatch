@@ -5010,7 +5010,7 @@ updateStartButton();
 
 // Registrer Service Worker for PWA-støtte med auto-oppdatering
 if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('sw.js').then(reg => {
+    navigator.serviceWorker.register('sw.js', { updateViaCache: 'none' }).then(reg => {
         // Sjekk for oppdateringer regelmessig (hvert 60. sekund)
         setInterval(() => reg.update(), 60000);
         // Når ny SW er klar: aktiver og reload for å vise siste versjon
