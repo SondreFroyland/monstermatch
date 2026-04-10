@@ -3898,9 +3898,15 @@ function renderMenu() {
 
         card.addEventListener('click', () => {
             selectedThemeId = theme.id;
-            renderMenu();
+            themeGridEl.querySelectorAll('.theme-card').forEach(c => c.classList.remove('selected'));
+            card.classList.add('selected');
             updateDifficultySection();
             updateStartButton();
+            const rect = nesteBtnEl.getBoundingClientRect();
+            const target = rect.bottom + window.scrollY - window.innerHeight + 16;
+            if (target > window.scrollY) {
+                window.scrollTo({ top: target, behavior: 'smooth' });
+            }
         });
 
         themeGridEl.appendChild(card);
