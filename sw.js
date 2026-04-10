@@ -1,7 +1,28 @@
-const CACHE_NAME = 'monstermatch-v2';
+const CACHE_NAME = 'monstermatch-v3';
 
-// Install: ta over umiddelbart
+const PRECACHE_URLS = [
+  './',
+  './index.html',
+  './styles.css',
+  './js/license.js',
+  './js/qrcode.js',
+  './js/game-codes.js',
+  './js/themes.js',
+  './js/math-generator.js',
+  './js/images.js',
+  './js/state.js',
+  './js/ui-helpers.js',
+  './js/menu.js',
+  './js/game.js',
+  './icon-192.png',
+  './icon-512.png',
+];
+
+// Install: precache alle filer og ta over umiddelbart
 self.addEventListener('install', event => {
+  event.waitUntil(
+    caches.open(CACHE_NAME).then(cache => cache.addAll(PRECACHE_URLS))
+  );
   self.skipWaiting();
 });
 
@@ -40,7 +61,7 @@ self.addEventListener('fetch', event => {
         .catch(() => caches.match(event.request))
     );
   } else {
-    // Stale-while-revalidate for andre ressurser (ikoner, manifest, jsQR)
+    // Stale-while-revalidate for andre ressurser (JS, CSS, ikoner, jsQR)
     event.respondWith(
       caches.match(event.request).then(cached => {
         const fetchPromise = fetch(event.request).then(response => {
