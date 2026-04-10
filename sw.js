@@ -48,9 +48,9 @@ self.addEventListener('fetch', event => {
     || url.pathname.endsWith('/');
 
   if (isHTML) {
-    // Network-first for HTML: alltid hent nyeste versjon
+    // Network-first for HTML: alltid hent nyeste versjon, bypass HTTP-cache
     event.respondWith(
-      fetch(event.request)
+      fetch(event.request, { cache: 'no-store' })
         .then(response => {
           if (response.ok) {
             const clone = response.clone();
