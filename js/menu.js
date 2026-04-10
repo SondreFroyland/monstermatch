@@ -443,7 +443,7 @@ function showMenuStep(step, direction = 'forward') {
     const step2 = document.getElementById('menu-step-2');
     if (step === 2) {
         step1.style.display = 'none';
-        step2.style.display = '';
+        step2.style.display = 'block';
         step2.classList.remove('back');
         void step2.offsetWidth; // force reflow for animation
         step2.classList.add('menu-step');
@@ -473,7 +473,7 @@ function showMenuStep(step, direction = 'forward') {
         }
     } else {
         step2.style.display = 'none';
-        step1.style.display = '';
+        step1.style.display = 'block';
         step1.classList.add('back');
         void step1.offsetWidth;
         step1.classList.remove('back');
