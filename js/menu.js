@@ -436,6 +436,8 @@ function renderMenu() {
         </div>
         <span class="stats-reset-link" onclick="resetStats()">Nullstill statistikk</span>
     `;
+
+    updateStartButton();
 }
 
 function showMenuStep(step, direction = 'forward') {
