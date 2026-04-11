@@ -108,8 +108,12 @@ const CUSTOM_THEMES_KEY = 'loko_custom_themes';
 const EMOJI_OPTIONS = ['📚', '🎯', '🌟', '💡', '🎨', '🎵', '🔬', '📐', '🌍', '🧪', '🎲', '🏆'];
 
 function getCustomThemes() {
-    const stored = localStorage.getItem(CUSTOM_THEMES_KEY);
-    return stored ? JSON.parse(stored) : [];
+    try {
+        const stored = localStorage.getItem(CUSTOM_THEMES_KEY);
+        return stored ? JSON.parse(stored) : [];
+    } catch(e) {
+        return [];
+    }
 }
 
 function saveCustomThemes(list) {

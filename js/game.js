@@ -19,63 +19,68 @@ function startGame(fromCode = false, codeData = null) {
         _pendingStartArgs = null;
     }
 
-    let theme, subtitle;
-    currentGameCode = null;
-    preSeededShuffle = null;
+    try {
+        let theme, subtitle;
+        currentGameCode = null;
+        preSeededShuffle = null;
 
-    const codeBanner = document.getElementById('game-code-banner');
-    codeBanner.classList.add('hidden');
+        const codeBanner = document.getElementById('game-code-banner');
+        codeBanner.classList.add('hidden');
 
-    if (fromCode && codeData) {
-        // Spill fra spillkode
-        theme = codeData.theme;
-        subtitle = codeData.subtitle;
-        rng = mulberry32(codeData.seed);
-        quizData = theme.generate(codeData.difficulty || 'easy');
-        preSeededShuffle = shuffleArray([...Array(12).keys()]);
-        rng = Math.random;
-    } else {
-        theme = getAllThemes().find(t => t.id === selectedThemeId);
-        if (!theme) return;
-
-        if (currentMode === 'teacher') {
-            // Generer seed og lag spillkode
-            const seed = Math.floor(Math.random() * 24000000);
-            rng = mulberry32(seed);
-            quizData = theme.generate(selectedDifficulty);
+        if (fromCode && codeData) {
+            // Spill fra spillkode
+            theme = codeData.theme;
+            subtitle = codeData.subtitle;
+            rng = mulberry32(codeData.seed);
+            quizData = theme.generate(codeData.difficulty || 'easy');
             preSeededShuffle = shuffleArray([...Array(12).keys()]);
             rng = Math.random;
-
-            if (theme.isCustom) {
-                const ct = getCustomThemes().find(c => c.id === theme.id);
-                if (ct) currentGameCode = encodeCustomGameCode(ct, seed);
-            } else {
-                const themeIndex = BUILTIN_THEME_IDS.indexOf(theme.id);
-                if (themeIndex >= 0) currentGameCode = encodeGameCode(themeIndex, selectedDifficulty, seed);
-            }
         } else {
-            quizData = theme.generate(selectedDifficulty);
+            theme = getAllThemes().find(t => t.id === selectedThemeId);
+            if (!theme) return;
+
+            if (currentMode === 'teacher') {
+                // Generer seed og lag spillkode
+                const seed = Math.floor(Math.random() * 24000000);
+                rng = mulberry32(seed);
+                quizData = theme.generate(selectedDifficulty);
+                preSeededShuffle = shuffleArray([...Array(12).keys()]);
+                rng = Math.random;
+
+                if (theme.isCustom) {
+                    const ct = getCustomThemes().find(c => c.id === theme.id);
+                    if (ct) currentGameCode = encodeCustomGameCode(ct, seed);
+                } else {
+                    const themeIndex = BUILTIN_THEME_IDS.indexOf(theme.id);
+                    if (themeIndex >= 0) currentGameCode = encodeGameCode(themeIndex, selectedDifficulty, seed);
+                }
+            } else {
+                quizData = theme.generate(selectedDifficulty);
+            }
+
+            subtitle = theme.name;
+            if (theme.hasDifficulty) {
+                const diff = difficulties.find(d => d.id === selectedDifficulty);
+                subtitle += ` – ${diff.label}`;
+            }
         }
 
-        subtitle = theme.name;
-        if (theme.hasDifficulty) {
-            const diff = difficulties.find(d => d.id === selectedDifficulty);
-            subtitle += ` – ${diff.label}`;
+        gameSubtitleEl.textContent = subtitle;
+        showScreen('game');
+        gameStartTime = Date.now();
+        retryCount = 0;
+        statsUpdatedThisGame = false;
+        initGame();
+
+        // Vis spillkode-banner med QR-kode for lærere
+        if (currentGameCode && currentMode === 'teacher') {
+            document.getElementById('game-code-display').textContent = currentGameCode;
+            codeBanner.classList.remove('hidden');
+            updateQRCode();
         }
-    }
-
-    gameSubtitleEl.textContent = subtitle;
-    showScreen('game');
-    gameStartTime = Date.now();
-    retryCount = 0;
-    statsUpdatedThisGame = false;
-    initGame();
-
-    // Vis spillkode-banner med QR-kode for lærere
-    if (currentGameCode && currentMode === 'teacher') {
-        document.getElementById('game-code-display').textContent = currentGameCode;
-        codeBanner.classList.remove('hidden');
-        updateQRCode();
+    } catch(e) {
+        console.error('startGame feil:', e);
+        showToast('Feil ved oppstart: ' + e.message);
     }
 }
 
