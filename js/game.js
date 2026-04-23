@@ -91,6 +91,12 @@ function showScreen(screen) {
     menuEl.style.display = screen === 'menu' ? '' : 'none';
     appEl.classList.toggle('visible', screen === 'game');
     editorEl.classList.toggle('hidden', screen !== 'editor');
+
+    // Hvis en SW-oppdatering ble utsatt mens brukeren var i spill, last på nytt nå
+    if (screen !== 'game' && window._pendingSWReload) {
+        window._pendingSWReload = false;
+        window.location.reload();
+    }
 }
 
 function goBackToMenu() {
@@ -986,7 +992,12 @@ if ('serviceWorker' in navigator) {
             if (newSW) {
                 newSW.addEventListener('statechange', () => {
                     if (newSW.state === 'activated' && navigator.serviceWorker.controller) {
-                        window.location.reload();
+                        // Ikke kast brukeren ut av et pågående spill – utsett til menyen
+                        if (currentScreen === 'game') {
+                            window._pendingSWReload = true;
+                        } else {
+                            window.location.reload();
+                        }
                     }
                 });
             }
