@@ -96,7 +96,6 @@ function isLicensed() {
     const stored = getStoredLicense();
     return stored && validateLicenseKey(stored);
 }
-function hasAccess() { return isLicensed() || isDemoActive(); }
 
 function showLicenseScreen() {
     const licenseScreen = document.getElementById('license-screen');

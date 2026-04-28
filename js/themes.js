@@ -75,7 +75,7 @@ const themes = [
             { question: 'Sterk',   answer: 'Svak' },
             { question: 'Våt',     answer: 'Tørr' },
             { question: 'Modig',   answer: 'Feig' },
-        ]).slice(0, 12),
+        ]),
     },
     {
         id: 'counties',
@@ -93,7 +93,7 @@ const themes = [
             { question: 'Troms',             answer: 'Tromsø' },
             { question: 'Finnmark',          answer: 'Vadsø' },
             { question: 'Innlandet',         answer: 'Hamar' },
-            { question: 'Viken',             answer: 'Drammen' },
+            { question: 'Akershus',          answer: 'Lillestrøm' },
             { question: 'Vestfold',          answer: 'Tønsberg' },
             { question: 'Agder',             answer: 'Kristiansand' },
         ],

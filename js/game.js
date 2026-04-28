@@ -712,7 +712,8 @@ document.getElementById('game-code-input').addEventListener('keydown', (e) => {
 });
 document.getElementById('copy-link-btn').addEventListener('click', () => {
     const code = document.getElementById('game-code-display').textContent;
-    const url = window.location.origin + window.location.pathname + '?code=' + encodeURIComponent(code);
+    let url = window.location.origin + window.location.pathname + '?code=' + encodeURIComponent(code);
+    if (selectedImageId >= 0) url += '&img=' + selectedImageId;
     navigator.clipboard.writeText(url).then(() => {
         const btn = document.getElementById('copy-link-btn');
         btn.textContent = '✓ Kopiert!';
@@ -813,7 +814,6 @@ puzzleImageUrl = defaultImages[0].url;
 checkLicense();
 renderModeOptions();
 renderMenu();
-updateStartButton();
 
 // Auto-start fra URL-parameter (?code=...)
 (function() {
@@ -986,7 +986,6 @@ if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('sw.js', { updateViaCache: 'none' }).then(reg => {
         // Sjekk for oppdateringer regelmessig (hvert 60. sekund)
         setInterval(() => reg.update(), 60000);
-        // Når ny SW er klar: aktiver og reload for å vise siste versjon
         reg.addEventListener('updatefound', () => {
             const newSW = reg.installing;
             if (newSW) {

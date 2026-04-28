@@ -462,11 +462,12 @@ function showMenuStep(step, direction = 'forward') {
             if (!isLicensed()) {
                 const remaining = DEMO_LIMIT - getDemoUsed();
                 demoBanner.style.display = '';
+                demoBanner.classList.remove('demo-banner-warning', 'demo-banner-expired');
                 if (remaining > 0) {
-                    demoBanner.style.background = '#fef9c3'; demoBanner.style.borderColor = '#fde047'; demoBanner.style.color = '#854d0e';
+                    demoBanner.classList.add('demo-banner-warning');
                     demoBanner.innerHTML = `Demo: ${remaining} av ${DEMO_LIMIT} prøvespill igjen. ${buyLink} for ubegrenset tilgang.`;
                 } else {
-                    demoBanner.style.background = '#fee2e2'; demoBanner.style.borderColor = '#fca5a5'; demoBanner.style.color = '#991b1b';
+                    demoBanner.classList.add('demo-banner-expired');
                     demoBanner.innerHTML = `Demo-perioden er over. ${buyLink} for å fortsette.`;
                 }
             } else {
