@@ -437,6 +437,7 @@ function renderMenu() {
         <span class="stats-reset-link" onclick="resetStats()">Nullstill statistikk</span>
     `;
 
+    renderAppQRCode();
     updateStartButton();
 }
 

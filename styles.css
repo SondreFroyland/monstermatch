@@ -405,6 +405,19 @@ body {
     transform: translateY(0);
 }
 
+.app-qr-section {
+    text-align: center;
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 2px solid var(--border);
+}
+
+.app-qr-label {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin-bottom: 10px;
+}
+
 .qr-scanner-overlay {
     position: fixed;
     inset: 0;
