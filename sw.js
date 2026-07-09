@@ -1,4 +1,4 @@
-const CACHE_NAME = 'monstermatch-v3';
+const CACHE_NAME = 'monstermatch-v4';
 
 const PRECACHE_URLS = [
   './',
