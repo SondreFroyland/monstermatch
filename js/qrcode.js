@@ -382,6 +382,25 @@ function renderQRToCanvas(canvas, qr) {
     }
 }
 
+// QR-kode på startsiden (kun lærermodus): leder elevene til appens hovedside
+function renderAppQRCode() {
+    const section = document.getElementById('app-qr-section');
+    if (!section) return;
+    if (currentMode !== 'teacher') {
+        section.style.display = 'none';
+        return;
+    }
+    section.style.display = '';
+    let url = window.location.origin + window.location.pathname;
+    const storedLicense = getStoredLicense();
+    if (storedLicense) url += '?license=' + encodeURIComponent(storedLicense);
+    try {
+        renderQRToCanvas(document.getElementById('app-qr-canvas'), QrCode.encode(url, 0));
+    } catch (e) {
+        section.style.display = 'none';
+    }
+}
+
 function updateQRCode() {
     const code = document.getElementById('game-code-display').textContent;
     if (!code) return;
